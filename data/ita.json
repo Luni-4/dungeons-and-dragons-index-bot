@@ -1,0 +1,42 @@
+{
+    "items": [
+        {
+            "books": [
+                {
+                    "name": "Manuale del Master",
+                    "pages": [
+                        "260",
+                        "261"
+                    ]
+                },
+                {
+                    "name": "Manuale del Giocatore",
+                    "pages": [
+                        "270",
+                        "271"
+                    ]
+                }
+            ],
+            "name": "onore"
+        },
+        {
+            "books": [
+                {
+                    "name": "Manuale del Master",
+                    "pages": [
+                        "220",
+                        "250"
+                    ]
+                },
+                {
+                    "name": "Manuale del Giocatore",
+                    "pages": [
+                        "230",
+                        "251"
+                    ]
+                }
+            ],
+            "name": "sanità"
+        }
+    ]
+}

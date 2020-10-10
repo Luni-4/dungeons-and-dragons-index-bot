@@ -1,0 +1,42 @@
+{
+    "items": [
+        {
+            "books": [
+                {
+                    "name": "Dungeon's Guide",
+                    "pages": [
+                        "260",
+                        "261"
+                    ]
+                },
+                {
+                    "name": "Player's Handbook",
+                    "pages": [
+                        "270",
+                        "271"
+                    ]
+                }
+            ],
+            "name": "honour"
+        },
+        {
+            "books": [
+                {
+                    "name": "Dungeon's Guide",
+                    "pages": [
+                        "220",
+                        "250"
+                    ]
+                },
+                {
+                    "name": "Player's Handbook",
+                    "pages": [
+                        "230",
+                        "251"
+                    ]
+                }
+            ],
+            "name": "sanity"
+        }
+    ]
+}

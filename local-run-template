@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Run this script to execute the bot locally
+
+export TELEGRAM_BOT_TOKEN=YOUR_TELEGRAM_BOT_KEY
+target/debug/dungeons-and-dragons-index-bot
