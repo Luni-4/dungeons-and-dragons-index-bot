@@ -1,5 +1,6 @@
 mod eng_items;
 mod ita_items;
+mod langs_strs;
 
 use std::env;
 
@@ -9,16 +10,12 @@ use telegram_bot::{Api, Error, Message, MessageKind, ParseMode, Update, UpdateKi
 
 use eng_items::ENG_MAP;
 use ita_items::ITA_MAP;
+use langs_strs::{ENG_STRS, ITA_STRS, SUPPORTED_LANGS};
 
 macro_rules! input_error {
-    ($input_vec: ident, $right_command: ident) => {
+    ($input_vec: ident, $langs_strs: ident, $right_command: ident) => {
         if $input_vec.len() == 1 {
-            Self::Error(
-                "`".to_owned()
-                    + &$input_vec[0].to_owned()
-                    + "` needs an `ITEM` argument\n\n \
-                       Run the `/help` command for major details",
-            )
+            Self::Error("`".to_owned() + &$input_vec[0].to_owned() + "` " + $langs_strs["error"])
         } else {
             Self::$right_command($input_vec[1].to_string())
         }
@@ -34,8 +31,8 @@ macro_rules! parse_markdown {
 enum Command {
     Eng(String),
     Ita(String),
+    Help(Option<String>),
     Error(String),
-    Help,
     Unknown,
 }
 
@@ -44,9 +41,17 @@ impl Command {
     pub fn analyze_command(text: &str) -> Self {
         let splits: Vec<&str> = text.splitn(2, ' ').collect();
         match splits[0] {
-            "/eng" => input_error!(splits, Eng),
-            "/ita" => input_error!(splits, Ita),
-            "/help" => Self::Help,
+            "/eng" => input_error!(splits, ENG_STRS, Eng),
+            "/ita" => input_error!(splits, ITA_STRS, Ita),
+            "/help" => Self::Help(
+                if splits.len() == 2 && SUPPORTED_LANGS.contains(&splits[1]) {
+                    Some(splits[1].to_owned())
+                } else if splits.len() == 1 {
+                    Some("eng".to_owned())
+                } else {
+                    None
+                },
+            ),
             _ => Self::Unknown,
         }
     }
@@ -57,16 +62,16 @@ async fn run_item(
     message: Message,
     input: &str,
     map: &phf::Map<&'static str, phf::Set<&'static str>>,
+    langs_strs: &phf::Map<&'static str, &'static str>,
 ) -> Result<(), Error> {
     if !map.contains_key(input.to_lowercase().as_str()) {
         api.send(parse_markdown!(message.text_reply(
-            "`".to_owned()
-                + &input.to_owned()
-                + "` is not a valid word or not contained in our dictionary"
+            "`".to_owned() + &input.to_owned() + "` " + langs_strs["heading"]
         )))
         .await?;
     } else {
-        let output_heading = "Results for the `".to_owned() + &input.to_owned() + "` item:\n\n";
+        let output_heading =
+            langs_strs["results"].to_owned() + &" `".to_owned() + &input.to_owned() + "`\n\n";
         let output_str = output_heading
             + &map[input.to_lowercase().as_str()]
                 .iter()
@@ -86,17 +91,12 @@ async fn run_command_error(api: Api, message: Message, error: &str) -> Result<()
     Ok(())
 }
 
-async fn run_help(api: Api, message: Message) -> Result<(), Error> {
-    let helper = "This bot retrieves the pages of some chosen items from \
-Dungeons and Dragons version 5.0 books.
-
-It implements the following commands:
-
-/eng `ITEM` --> Retrieves the pages of an `ITEM` passed as input using \
-the English books
-/ita `ITEM` --> Retrieves the pages of an `ITEM` passed as input using \
-the Italian books
-/help --> Prints this helper message";
+async fn run_help(api: Api, message: Message, lang: Option<&str>) -> Result<(), Error> {
+    let helper = match lang {
+        Some("eng") => ENG_STRS["help"],
+        Some("italiano") => ITA_STRS["help"],
+        Some(_) | None => return Ok(()),
+    };
 
     api.send(parse_markdown!(message.text_reply(helper)))
         .await?;
@@ -108,10 +108,10 @@ async fn run_command(api: Api, message: Message) -> Result<(), Error> {
     if let MessageKind::Text { ref data, .. } = message.kind {
         let command = Command::analyze_command(data.as_str());
         match command {
-            Command::Eng(ref input) => run_item(api, message, input, &ENG_MAP).await?,
-            Command::Ita(ref input) => run_item(api, message, input, &ITA_MAP).await?,
+            Command::Eng(ref input) => run_item(api, message, input, &ENG_MAP, &ENG_STRS).await?,
+            Command::Ita(ref input) => run_item(api, message, input, &ITA_MAP, &ITA_STRS).await?,
             Command::Error(ref error) => run_command_error(api, message, error).await?,
-            Command::Help => run_help(api, message).await?,
+            Command::Help(ref lang) => run_help(api, message, lang.as_deref()).await?,
             _ => (),
         }
     };
