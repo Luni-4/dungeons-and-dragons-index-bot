@@ -14,6 +14,16 @@ use commands::Command;
 use items::{ENG_MAP, ITA_MAP};
 use langs_strs::{ENG_STRS, ITA_STRS};
 
+macro_rules! filter_keys {
+    ($map: ident, $letter: ident) => {
+        $map.keys()
+            .filter(|s| s.starts_with($letter))
+            .map(|s| &**s)
+            .collect::<Vec<&str>>()
+            .join("\n")
+    };
+}
+
 macro_rules! parse_markdown {
     ($message_api: expr) => {
         $message_api.parse_mode(ParseMode::Markdown)
@@ -65,6 +75,35 @@ async fn run_help(
     Ok(())
 }
 
+async fn run_list(
+    api: Api,
+    message: Message,
+    letter: char,
+    lang: Option<&str>,
+) -> Result<(), Error> {
+    let letter_str = " `".to_owned() + &letter.to_string() + "`\n\n";
+    let items_str = match (letter, lang) {
+        (letter, None) => {
+            ENG_STRS["list"].to_owned()
+                + &letter_str
+                + &filter_keys!(ENG_MAP, letter)
+        }
+        (letter, Some("ita")) => {
+            ITA_STRS["list"].to_owned()
+                + &letter_str
+                + &filter_keys!(ITA_MAP, letter)
+        }
+        (_, _) => return Ok(()),
+    };
+
+    if !items_str.is_empty() {
+        api.send(parse_markdown!(message.text_reply(items_str)))
+            .await?;
+    }
+
+    Ok(())
+}
+
 async fn run_command(api: Api, message: Message) -> Result<(), Error> {
     if let MessageKind::Text { ref data, .. } = message.kind {
         let command = Command::analyze_command(data.as_str());
@@ -74,6 +113,9 @@ async fn run_command(api: Api, message: Message) -> Result<(), Error> {
             }
             Command::Ita(ref input) => {
                 run_item(api, message, input, &ITA_MAP, &ITA_STRS).await?
+            }
+            Command::List(letter, ref lang) => {
+                run_list(api, message, letter, lang.as_deref()).await?
             }
             Command::Help(ref lang) => {
                 run_help(api, message, lang.as_deref()).await?
