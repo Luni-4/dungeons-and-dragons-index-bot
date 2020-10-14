@@ -1,16 +1,9 @@
-use crate::langs_strs::{ENG_STRS, ITA_STRS, SUPPORTED_LANGS};
+use crate::langs_strs::SUPPORTED_LANGS;
 
-macro_rules! input_error {
-    ($input_vec: ident, $langs_strs: ident, $right_command: ident) => {
+macro_rules! missing_argument {
+    ($input_vec: ident, $lang: expr) => {
         if $input_vec.len() == 1 {
-            Self::Error(
-                "`".to_owned()
-                    + &$input_vec[0].to_owned()
-                    + "` "
-                    + $langs_strs["error"],
-            )
-        } else {
-            Self::$right_command($input_vec[1].to_string())
+            return Self::Help(Some($lang.to_owned()));
         }
     };
 }
@@ -19,17 +12,21 @@ pub enum Command {
     Eng(String),
     Ita(String),
     Help(Option<String>),
-    Error(String),
     Unknown,
 }
 
 impl Command {
-    #[inline(always)]
     pub fn analyze_command(text: &str) -> Self {
         let splits: Vec<&str> = text.splitn(2, ' ').collect();
         match splits[0] {
-            "/eng" => input_error!(splits, ENG_STRS, Eng),
-            "/ita" => input_error!(splits, ITA_STRS, Ita),
+            "/eng" => {
+                missing_argument!(splits, "eng");
+                Self::Eng(splits[1].to_string())
+            }
+            "/ita" => {
+                missing_argument!(splits, "ita");
+                Self::Ita(splits[1].to_string())
+            }
             "/help" => Self::Help(
                 if splits.len() == 2 && SUPPORTED_LANGS.contains(&splits[1]) {
                     Some(splits[1].to_owned())

@@ -48,16 +48,6 @@ async fn run_item(
     Ok(())
 }
 
-async fn run_command_error(
-    api: Api,
-    message: Message,
-    error: &str,
-) -> Result<(), Error> {
-    api.send(parse_markdown!(message.text_reply(error))).await?;
-
-    Ok(())
-}
-
 async fn run_help(
     api: Api,
     message: Message,
@@ -65,7 +55,7 @@ async fn run_help(
 ) -> Result<(), Error> {
     let helper = match lang {
         Some("eng") => ENG_STRS["help"],
-        Some("italiano") => ITA_STRS["help"],
+        Some("ita") => ITA_STRS["help"],
         Some(_) | None => return Ok(()),
     };
 
@@ -84,9 +74,6 @@ async fn run_command(api: Api, message: Message) -> Result<(), Error> {
             }
             Command::Ita(ref input) => {
                 run_item(api, message, input, &ITA_MAP, &ITA_STRS).await?
-            }
-            Command::Error(ref error) => {
-                run_command_error(api, message, error).await?
             }
             Command::Help(ref lang) => {
                 run_help(api, message, lang.as_deref()).await?
