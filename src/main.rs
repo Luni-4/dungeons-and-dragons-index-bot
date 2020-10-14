@@ -64,22 +64,19 @@ async fn run_item(
     map: &phf::Map<&'static str, phf::Set<&'static str>>,
     langs_strs: &phf::Map<&'static str, &'static str>,
 ) -> Result<(), Error> {
-    if !map.contains_key(input.to_lowercase().as_str()) {
+    let map_value = map.get(input.to_lowercase().as_str());
+
+    if let Some(set) = map_value {
+        let output_heading =
+            langs_strs["results"].to_owned() + &" `".to_owned() + &input.to_owned() + "`\n\n";
+        let output_str = output_heading + &set.iter().map(|s| &**s).collect::<Vec<&str>>().join("");
+        api.send(parse_markdown!(message.text_reply(output_str)))
+            .await?;
+    } else {
         api.send(parse_markdown!(message.text_reply(
             "`".to_owned() + &input.to_owned() + "` " + langs_strs["heading"]
         )))
         .await?;
-    } else {
-        let output_heading =
-            langs_strs["results"].to_owned() + &" `".to_owned() + &input.to_owned() + "`\n\n";
-        let output_str = output_heading
-            + &map[input.to_lowercase().as_str()]
-                .iter()
-                .map(|s| &**s)
-                .collect::<Vec<&str>>()
-                .join("");
-        api.send(parse_markdown!(message.text_reply(output_str)))
-            .await?;
     }
 
     Ok(())
