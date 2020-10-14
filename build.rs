@@ -37,7 +37,10 @@ fn read_json_file(lang_filename: &str) -> Result<Data, std::io::Error> {
     Ok(data)
 }
 
-fn write_sets<W: Write>(file: &mut BufWriter<W>, json_data: &Data) -> Result<(), std::io::Error> {
+fn write_sets<W: Write>(
+    file: &mut BufWriter<W>,
+    json_data: &Data,
+) -> Result<(), std::io::Error> {
     for item in &json_data.items {
         let mut builder = phf_codegen::Set::new();
         let mut set_strings: Vec<String> = Vec::new();
@@ -49,7 +52,9 @@ fn write_sets<W: Write>(file: &mut BufWriter<W>, json_data: &Data) -> Result<(),
                 .map(|s| &**s)
                 .collect::<Vec<&str>>()
                 .join(", ");
-            set_strings.push(book.name.clone() + " ---> pages " + pages_str.as_str() + "\n");
+            set_strings.push(
+                book.name.clone() + " ---> pages " + pages_str.as_str() + "\n",
+            );
         }
 
         for set_str in &set_strings {
