@@ -79,16 +79,9 @@ fn write_map<W: Write>(
 ) -> Result<(), std::io::Error> {
     let mut builder = phf_codegen::Map::new();
 
-    let mut items_name: Vec<String> = json_data
-        .items
-        .iter()
-        .map(|item| item.name.clone())
-        .collect();
-
-    items_name.sort_unstable();
-
-    for name in &items_name {
-        builder.entry(name.as_str(), &unidecode(&name.to_uppercase()));
+    for item in &json_data.items {
+        builder
+            .entry(item.name.as_str(), &unidecode(&item.name.to_uppercase()));
     }
 
     writeln!(
