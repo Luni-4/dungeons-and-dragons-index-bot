@@ -6,6 +6,7 @@ pub static ENG_STRS: phf::Map<&'static str, &'static str> = phf_map! {
     "heading" => "is not a valid item or not contained in our dictionary.",
     "results" => "Results for",
     "list" => "Supported items starting with letter",
+    "empty" => "No items found.",
     "help" => "This bot retrieves the pages of some chosen items from the Dungeons and Dragons version 5.0 books.\n\n\
                It implements the following commands:\n\n\
                /eng `ITEM` --> Retrieves the pages of an `ITEM` using the English books.\n\n\
@@ -22,6 +23,7 @@ pub static ITA_STRS: phf::Map<&'static str, &'static str> = phf_map! {
     "heading" => "non è un elemento valido o non è contenuto nel nostro dizionario.",
     "results" => "Risultati per",
     "list" => "Elementi supportati con la lettera",
+    "empty" => "Nessun elemento.",
     "help" => "Questo bot ritrova le pagine di alcuni elementi del gioco dai manuali della versione 5.0 di Dungeons and Dragons.\n\n\
                Implementa i seguenti comandi:\n\n\
                /eng `ELEMENTO` --> Ritrova le pagine di `ELEMENTO` nei manuali inglesi.\n\n\

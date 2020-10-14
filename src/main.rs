@@ -6,28 +6,36 @@ use std::env;
 
 use futures::StreamExt;
 use telegram_bot::prelude::*;
-use telegram_bot::{
-    Api, Error, Message, MessageKind, ParseMode, Update, UpdateKind,
-};
+use telegram_bot::{Api, Error, Message, MessageKind, ParseMode, UpdateKind};
 
 use commands::Command;
 use items::{ENG_MAP, ITA_MAP};
 use langs_strs::{ENG_STRS, ITA_STRS};
 
-macro_rules! filter_keys {
-    ($map: ident, $letter: ident) => {
-        $map.keys()
-            .filter(|s| s.starts_with($letter))
-            .map(|s| &**s)
-            .collect::<Vec<&str>>()
-            .join("\n")
-    };
-}
-
 macro_rules! parse_markdown {
     ($message_api: expr) => {
         $message_api.parse_mode(ParseMode::Markdown)
     };
+}
+
+#[inline(always)]
+fn filter_keys(
+    map: &phf::Map<&'static str, phf::Set<&'static str>>,
+    langs_strs: &phf::Map<&'static str, &'static str>,
+    letter: char,
+) -> String {
+    let items_strs = map
+        .keys()
+        .filter(|s| s.starts_with(letter))
+        .map(|s| &**s)
+        .collect::<Vec<&str>>()
+        .join("\n");
+
+    if items_strs.is_empty() {
+        langs_strs["empty"].to_owned()
+    } else {
+        items_strs
+    }
 }
 
 async fn run_item(
@@ -81,25 +89,24 @@ async fn run_list(
     letter: char,
     lang: Option<&str>,
 ) -> Result<(), Error> {
-    let letter_str = " `".to_owned() + &letter.to_string() + "`\n\n";
+    let letter_str =
+        " `".to_owned() + &letter.to_string().to_uppercase() + "`\n\n";
     let items_str = match (letter, lang) {
         (letter, None) => {
             ENG_STRS["list"].to_owned()
                 + &letter_str
-                + &filter_keys!(ENG_MAP, letter)
+                + &filter_keys(&ENG_MAP, &ENG_STRS, letter)
         }
         (letter, Some("ita")) => {
             ITA_STRS["list"].to_owned()
                 + &letter_str
-                + &filter_keys!(ITA_MAP, letter)
+                + &filter_keys(&ITA_MAP, &ITA_STRS, letter)
         }
         (_, _) => return Ok(()),
     };
 
-    if !items_str.is_empty() {
-        api.send(parse_markdown!(message.text_reply(items_str)))
-            .await?;
-    }
+    api.send(parse_markdown!(message.text_reply(items_str)))
+        .await?;
 
     Ok(())
 }
@@ -137,17 +144,10 @@ async fn main() -> Result<(), Error> {
 
     while let Some(update) = stream.next().await {
         match update {
-            Ok(Update {
-                kind: UpdateKind::Message(message),
-                id: _,
-            }) => {
-                run_command(api.clone(), message).await?;
-            }
-            Ok(update_kind) => {
-                dbg!(
-                    "Received a non-supported kind of update = {:?}",
-                    update_kind
-                );
+            Ok(update) => {
+                if let UpdateKind::Message(message) = update.kind {
+                    run_command(api.clone(), message).await?;
+                }
             }
             Err(err) => {
                 dbg!("Update error = {}", err);
