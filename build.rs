@@ -2,14 +2,17 @@ extern crate phf_codegen;
 extern crate unidecode;
 
 use std::env;
+use std::fs;
 use std::fs::File;
 use std::io::{BufReader, BufWriter, Write};
 use std::path::Path;
+use std::process::Command;
 
 use serde::Deserialize;
 use unidecode::unidecode;
 
 const FILE_PATH: &str = "data";
+const SRC_PATH: &str = "./src/items";
 
 #[derive(Deserialize, Debug)]
 struct Data {
@@ -92,14 +95,13 @@ fn write_map<W: Write>(
     )
 }
 
-fn write_lang(
+fn write_output_lang(
     map_lang: &str,
     lang_filename: &str,
-    output_filename: &str,
+    path: &Path,
 ) -> Result<(), std::io::Error> {
     let json_data = read_json_file(lang_filename)?;
 
-    let path = Path::new(&env::var("OUT_DIR").unwrap()).join(output_filename);
     let mut file = BufWriter::new(File::create(&path).unwrap());
 
     writeln!(
@@ -112,7 +114,31 @@ fn write_lang(
     write_map(&mut file, &json_data, map_lang)
 }
 
+fn write_lang(
+    map_lang: &str,
+    lang_filename: &str,
+    output_filename: &str,
+) -> Result<(), std::io::Error> {
+    let output_path =
+        Path::new(&env::var("OUT_DIR").unwrap()).join(output_filename);
+    let src_path = Path::new(SRC_PATH).join(output_filename);
+
+    write_output_lang(map_lang, lang_filename, &output_path)?;
+
+    fs::copy(&output_path, &src_path)?;
+
+    Ok(())
+}
+
 fn main() -> Result<(), std::io::Error> {
     write_lang("ENG_MAP", "eng.json", "eng_items.rs")?;
-    write_lang("ITA_MAP", "ita.json", "ita_items.rs")
+    write_lang("ITA_MAP", "ita.json", "ita_items.rs")?;
+
+    // Run `cargo fmt` to format the maps
+    Command::new("cargo")
+        .arg("fmt")
+        .output()
+        .expect("Failed to execute cargo fmt, try to install it.");
+
+    Ok(())
 }
