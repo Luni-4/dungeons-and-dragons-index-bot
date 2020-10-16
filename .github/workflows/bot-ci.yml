@@ -16,13 +16,6 @@ jobs:
         profile: minimal
         toolchain: stable
         override: true
-
-    - name: Install stable
-      uses: actions-rs/toolchain@v1
-      with:
-        profile: minimal
-        toolchain: stable
-        override: true
         components: clippy, rustfmt
 
     - name: Run rustfmt
