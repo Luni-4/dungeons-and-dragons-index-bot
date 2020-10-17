@@ -5,34 +5,62 @@
                 {
                     "name": "Dungeon's Guide",
                     "pages": [
-                        "260",
-                        "261"
-                    ]
-                },
-                {
-                    "name": "Player's Handbook",
-                    "pages": [
-                        "270",
-                        "271"
+                        "252"
                     ]
                 }
             ],
-            "name": "honour"
+            "name": "chase"
         },
         {
             "books": [
                 {
                     "name": "Dungeon's Guide",
                     "pages": [
-                        "220",
-                        "250"
+                        "264"
                     ]
-                },
+                }
+            ],
+            "name": "honor"
+        },
+        {
+            "books": [
                 {
                     "name": "Player's Handbook",
                     "pages": [
-                        "230",
-                        "251"
+                        "255"
+                    ]
+                }
+            ],
+            "name": "kits"
+        },
+        {
+            "books": [
+                {
+                    "name": "Dungeon's Guide",
+                    "pages": [
+                        "258"
+                    ]
+                }
+            ],
+            "name": "madness"
+        },
+        {
+            "books": [
+                {
+                    "name": "Dungeon's Guide",
+                    "pages": [
+                        "257"
+                    ]
+                }
+            ],
+            "name": "poisons"
+        },
+        {
+            "books": [
+                {
+                    "name": "Dungeon's Guide",
+                    "pages": [
+                        "264"
                     ]
                 }
             ],
