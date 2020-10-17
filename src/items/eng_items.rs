@@ -27,7 +27,7 @@ const KITS: phf::Set<&'static str> = ::phf::Set {
         key: 3213172566270843353,
         disps: ::phf::Slice::Static(&[(0, 0)]),
         entries: ::phf::Slice::Static(&[(
-            "Player\'s Handbook ---> pages 255\n",
+            "Player\'s Handbook ---> pages 154\n",
             (),
         )]),
     },
