@@ -5,15 +5,18 @@
                 {
                     "name": "Manuale del Master",
                     "pages": [
-                        "260",
-                        "261"
+                        "252"
                     ]
-                },
+                }
+            ],
+            "name": "inseguimenti"
+        },
+        {
+            "books": [
                 {
-                    "name": "Manuale del Giocatore",
+                    "name": "Manuale del Master",
                     "pages": [
-                        "270",
-                        "271"
+                        "264"
                     ]
                 }
             ],
@@ -22,17 +25,42 @@
         {
             "books": [
                 {
-                    "name": "Manuale del Master",
-                    "pages": [
-                        "220",
-                        "250"
-                    ]
-                },
-                {
                     "name": "Manuale del Giocatore",
                     "pages": [
-                        "230",
-                        "251"
+                        "154"
+                    ]
+                }
+            ],
+            "name": "kits"
+        },
+        {
+            "books": [
+                {
+                    "name": "Manuale del Master",
+                    "pages": [
+                        "258"
+                    ]
+                }
+            ],
+            "name": "follia"
+        },
+        {
+            "books": [
+                {
+                    "name": "Manuale del Master",
+                    "pages": [
+                        "257"
+                    ]
+                }
+            ],
+            "name": "veleni"
+        },
+        {
+            "books": [
+                {
+                    "name": "Manuale del Master",
+                    "pages": [
+                        "264"
                     ]
                 }
             ],
