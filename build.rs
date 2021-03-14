@@ -69,8 +69,7 @@ fn write_sets<W: Write>(
             "const {}: phf::Set<&'static str> =\n{};\n",
             unidecode(&item.name.to_uppercase()),
             builder.build()
-        )
-        .unwrap()
+        )?;
     }
     Ok(())
 }

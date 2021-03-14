@@ -1,1 +1,1 @@
-worker: ./target/release/dungeons-and-dragons-index-bot
+web: ./target/release/dungeons-and-dragons-index-bot
